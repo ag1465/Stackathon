@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { ScrollView, StyleSheet, Dimensions, View, Image} from 'react-native';
 import { ExpoLinksView } from '@expo/samples';
 import MapView,{ Marker} from 'react-native-maps'
-import firebase from 'firebase'
+import {FirebaseWrapper} from '../config/Firebase/firebase'
 
 const { width, height } = Dimensions.get('window')
 
@@ -16,24 +16,45 @@ class MapsScreen extends React.Component {
   constructor(props){
     super(props)
     this.state = {
+      user: {},
       region: {
         latitude: LATITUDE,
         longitude: LONGITUDE,
         latitudeDelta: LATITUDE_DELTA,
         longitudeDelta: LONGITUDE_DELTA,
+      },
+      markers: {all: [], selected:{}}
+    }
+    this.getMarker = this.getMarker.bind(this)
+    this.markerClick = this.markerClick.bind(this)
+  }
+  componentDidMount(){
+    console.log('b component')
+    this.getMarker()
+    console.log('a component')
+  }
+  async getMarker() {
+    try {
+      console.log('before marker')
+      let markers = await FirebaseWrapper.GetInstance().getMarkers()
+      console.log('got marker', markers)
+      if(markers.length > 0){
+        this.setState({
+          ...this.state, markers: {...this.state.markers, all: markers}
+        })
       }
+      console.log('state marker', this.state.markers.all)
+    } catch (error) {
+      console.log(error)
     }
   }
-  // componentDidMount(){
-  //   console.log('running mapcourt')
-  //   var ref = firebase.database().ref('courts')
-  //   console.log(ref)
-  //   ref.on('value', function(snapshot){
-  //     console.log(snapshot.key)
-  //   })
-  // }
+
+  markerClick(){
+    console.log('clicked')
+  }
 
   render(){
+
     return (
       <View style={styles.container}>
         <MapView
@@ -43,36 +64,23 @@ class MapsScreen extends React.Component {
           scrollEnabled={true}
           showsScale={true}
         >
-          <MapView.Marker
-            coordinate={{latitude: 40.7222,
-            longitude: -74.0051}}
-            title={"Grand & Canal Courts"}
-            description={"Grand & Canal Sts."}
-          >
-            <Image
-            style = {{width: 50, height: 50}}
-            source ={{uri: 'http://www.pngall.com/wp-content/uploads/2017/05/Map-Marker-PNG-File.png'}}/>
-          </MapView.Marker>
-          <MapView.Marker
-            coordinate={{latitude: 40.6992,
-            longitude: -73.9983}}
-            title={"Brooklyn Bridge Park"}
-            description={"Pier 2."}
-          >
-            <Image
-            style = {{width: 50, height: 50}}
-            source ={{uri: 'http://www.pngall.com/wp-content/uploads/2017/05/Map-Marker-PNG-File.png'}}/>
-          </MapView.Marker>
-          <MapView.Marker
-            coordinate={{latitude: 40.7171,
-            longitude: -74.012}}
-            title={"Washington Market Park"}
-            description={"Chambers St. between Greenwich St. and West St."}
-            >
-            <Image
-            style = {{width: 50, height: 50}}
-            source ={{uri: 'http://www.pngall.com/wp-content/uploads/2017/05/Map-Marker-PNG-File.png'}}/>
-          </MapView.Marker>
+          {
+          this.state.markers.all.map(mark => {return(
+            // mark.player? markdescription = mark.player.length > 0 ? `${mark.description} \n ${mark.player}` : mark.description : '',
+
+            <MapView.Marker key={mark.id}
+              coordinate={{latitude: mark.latitude,
+              longitude: mark.longitude}}
+              title={mark.title}
+              description = {mark.description}
+              onPress={() => this.markerClick()}
+              >
+              <Image
+              style = {{width: 50, height: 50}}
+              source ={{uri: 'http://www.pngall.com/wp-content/uploads/2017/05/Map-Marker-PNG-File.png'}}/>
+            </MapView.Marker>
+          )})
+          }
         </MapView>
       </View>
     )

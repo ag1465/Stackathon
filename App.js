@@ -5,8 +5,11 @@ import React, { useState, Component} from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AppNavigator from './navigation/AppNavigator';
-import ApiKeys from './constants/ApiKeys'
 import * as firebase from 'firebase'
+import {FirebaseWrapper} from './config/Firebase/firebase';
+import firebaseConfig from './config/Firebase/ApiKeys'
+
+import './config/Firebase/firebase'
 
 export default class App extends React.Component {
   constructor(props) {
@@ -14,11 +17,8 @@ export default class App extends React.Component {
     this.state = {
       isLoadingComplete: false,
     };
+    FirebaseWrapper.GetInstance().Initialize()
 
-    // Initialize firebase...
-    if (!firebase.apps.length) {
-      firebase.initializeApp(ApiKeys.FirebaseConfig)
-    }
   }
   render() {
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
