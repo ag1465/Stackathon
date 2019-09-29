@@ -25,32 +25,43 @@ class MapsScreen extends React.Component {
       },
       markers: {all: [], selected:{}}
     }
-    this.getMarker = this.getMarker.bind(this)
+    this.getMarkers = this.getMarkers.bind(this)
     this.markerClick = this.markerClick.bind(this)
   }
   componentDidMount(){
-    console.log('b component')
-    this.getMarker()
-    console.log('a component')
+    // console.log('b component')
+    this.getMarkers()
+    // console.log('a component')
   }
-  async getMarker() {
+  async getMarkers() {
     try {
-      console.log('before marker')
+      // console.log('before marker')
       let markers = await FirebaseWrapper.GetInstance().getMarkers()
-      console.log('got marker', markers)
+      // console.log('got marker', markers)
       if(markers.length > 0){
         this.setState({
           ...this.state, markers: {...this.state.markers, all: markers}
         })
       }
-      console.log('state marker', this.state.markers.all)
+      // console.log('state marker', this.state.markers.all)
     } catch (error) {
       console.log(error)
     }
   }
 
-  markerClick(){
-    console.log('clicked')
+  markerClick(evt){
+    // console.log(evt)
+    // console.log(evt._targetInst.return.key)
+
+    this.setState(
+      { ...this.state, markers: {...this.state.markers, selected:{...evt.nativeEvent.coordinate,id: evt._targetInst.return.key}}},
+      function(){
+        this.props.navigation.navigate('PlayerList', {selected: this.state.markers.selected})
+      }
+    )
+
+
+    // console.log(this.state.markers.selected)
   }
 
   render(){
@@ -69,11 +80,15 @@ class MapsScreen extends React.Component {
             // mark.player? markdescription = mark.player.length > 0 ? `${mark.description} \n ${mark.player}` : mark.description : '',
 
             <MapView.Marker key={mark.id}
+              id = {mark.id}
               coordinate={{latitude: mark.latitude,
               longitude: mark.longitude}}
               title={mark.title}
               description = {mark.description}
-              onPress={() => this.markerClick()}
+              onPress={(evt) => {
+                this.markerClick(evt)
+              }
+              }
               >
               <Image
               style = {{width: 50, height: 50}}

@@ -41,17 +41,32 @@ export class FirebaseWrapper {
       await this._firestore.collection('courts').get()
             .then(function(snapshot){
               snapshot.forEach(function(doc){
-                console.log(doc.data)
+                // console.log(doc.data)
                 markers.push({id: doc.id, ...doc.data()})
           })
         })
       return markers
     } catch (error) {
-      console.log('something went wrong in database for markers ', error)
+      console.log('something went wrong in database for getmarkers ', error)
     }
 
   }
+  async getMarker(doc){
+    try {
+      let marker = []
+      await this._firestore.collection('courts').where('longitude', '==', doc.longitude).where('latitude', '==', doc.latitude).get()
+            .then(function(snapshot){
+              snapshot.forEach(function(doc){
+                // console.log(doc.data)
+                marker.push({id: doc.id, ...doc.data()})
+          })
+        })
+      return marker
+    } catch (error) {
+      console.log('something went wrong in database for getmarker ', error)
+    }
 
+  }
   // async CreateNewDocument(collectionPath, doc) {
   //   try {
   //     const ref = this._firestore.collection(collectionPath).doc()
