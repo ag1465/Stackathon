@@ -43,7 +43,6 @@ export default class PlayerListScreen extends React.Component {
           onPress={() => this.props.navigation.goBack()}
         />
         <FlatList
-
           data={this.state.players}
           renderItem={({item}) =>
           <ListItem

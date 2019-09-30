@@ -8,68 +8,67 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Button,
+  TextInput
 } from 'react-native';
-
+import {FirebaseWrapper} from '../config/Firebase/firebase'
+import { Post } from '../components/Post';
 import { MonoText } from '../components/StyledText';
 
-export default function HomeScreen() {
-  return (
-    <View style={styles.container}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}>
-        <View style={styles.welcomeContainer}>
-          <Image
-            source={
-              __DEV__
-                ? require('../assets/images/robot-dev.png')
-                : require('../assets/images/robot-prod.png')
-            }
-            style={styles.welcomeImage}
-          />
-        </View>
+export default class MessageBoardScreen extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      messages: [],
+      newmessage:{content: "", user: 'Allen', id: ""}
+    }
+    this.getPosts = this.getPosts.bind(this)
+  }
 
-        <View style={styles.getStartedContainer}>
-          <DevelopmentModeNotice />
+  componentDidMount() {
+    this.getPosts()
+  }
 
-          <Text style={styles.getStartedText}>Get started by opening</Text>
+  sendMessage() {
+    this.setState({...this.state, messages:[...this.state.messages, this.state.newmessage]},function(){
+      console.log(this.state.messages)
+    })
+  }
+  async getPosts() {
+    try {
+      await FirebaseWrapper.GetInstance().SetupCollectionListener( 'Washington Market Park Board', (messages) => this.setState({ messages }, function(){
+        console.log(this.state.messages)
+      }))
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
-          <View
-            style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-            <MonoText>screens/HomeScreen.js</MonoText>
-          </View>
-
-          <Text style={styles.getStartedText}>
-            Change this text and your app will automatically reload.
-          </Text>
-        </View>
-
-        <View style={styles.helpContainer}>
-          <TouchableOpacity onPress={handleHelpPress} style={styles.helpLink}>
-            <Text style={styles.helpLinkText}>
-              Help, it didn’t automatically reload!
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-
-      <View style={styles.tabBarInfoContainer}>
-        <Text style={styles.tabBarInfoText}>
-          This is a tab bar. You can edit it in:
-        </Text>
-
-        <View
-          style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-          <MonoText style={styles.codeHighlightText}>
-            navigation/MainTabNavigator.js
-          </MonoText>
-        </View>
+  render() {
+    return (
+      <View style={styles.container}>
+        <ScrollView
+          style={styles.container}>
+          {
+            this.state.messages && this.state.messages.map(message => <Post postInfo={message} key={message.id} />)
+          }
+        </ScrollView>
+        <TextInput
+        style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+        placeholder = 'Type message here'
+        onChangeText={message => this.setState({...this.state, newmessage:{...this.state.newmessage, content: message, id: Math.random().toString(20).substring(7)}})}
+        value={this.state.newmessage.content}
+        />
+        <Button
+          title = 'SEND'
+          onPress={() => this.sendMessage()}
+        />
       </View>
-    </View>
-  );
+    )
+  }
 }
 
-HomeScreen.navigationOptions = {
+MessageBoardScreen.navigationOptions = {
   header: null,
 };
 

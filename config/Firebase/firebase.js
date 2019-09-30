@@ -78,20 +78,22 @@ export class FirebaseWrapper {
   //   }
   // }
 
-  // async SetupCollectionListener(collectionPath, callback) {
-  //   try {
-  //     console.log('calling SetupCollectionListener')
-  //     await this._firestore.collection(collectionPath).orderBy('createdAt', 'desc').onSnapshot(querySnapshot => {
-  //       let container = []
-  //       querySnapshot.forEach(doc => {
-  //         container.push(doc.data())
-  //       })
-  //       return callback(container)
-  //     })
-  //   } catch (error) {
-  //     console.log('oh no! something went bad :( !', error)
-  //   }
-  // }
+  async SetupCollectionListener( name, callback) {
+    try {
+      console.log('calling SetupCollectionListener')
+      await this._firestore.collection("Washington Market Park Board").onSnapshot(querySnapshot => {
+        let container = []
+        // console.log(querySnapshot)
+        querySnapshot.forEach(doc => {
+          // console.log(doc.data())
+          container.push({...doc.data(), id: doc.id})
+        })
+        return callback(container)
+      })
+    } catch (error) {
+      console.log('oh no! something went bad :( !', error)
+    }
+  }
 }
 
 

@@ -13,8 +13,8 @@ const LATITUDE_DELTA = 0.002;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 class MapsScreen extends React.Component {
-  constructor(props){
-    super(props)
+  constructor(){
+    super()
     this.state = {
       user: {},
       region: {

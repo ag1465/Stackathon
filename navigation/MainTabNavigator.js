@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
-import HomeScreen from '../screens/HomeScreen';
+import MessageBoardScreen from '../screens/MessageBoardScreen';
 import MapsScreen from '../screens/MapsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
@@ -12,28 +12,28 @@ const config = Platform.select({
   default: {},
 });
 
-const HomeStack = createStackNavigator(
+const MessageBoardStack = createStackNavigator(
   {
-    Home: HomeScreen,
+    MessageBoard: MessageBoardScreen,
   },
   config
 );
 
-HomeStack.navigationOptions = {
-  tabBarLabel: 'Home',
+MessageBoardStack.navigationOptions = {
+  tabBarLabel: 'MessageBoard',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
       name={
         Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
+          ? 'ios-chatbubbles'
+          : 'md-chatbubbles'
       }
     />
   ),
 };
 
-HomeStack.path = '';
+MessageBoardStack.path = '';
 
 const MapsStack = createStackNavigator(
   {
@@ -45,7 +45,7 @@ const MapsStack = createStackNavigator(
 MapsStack.navigationOptions = {
   tabBarLabel: 'Maps',
   tabBarIcon: ({ focused }) => (
-    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'} />
+    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-map' : 'md-map'} />
   ),
 };
 
@@ -68,8 +68,8 @@ SettingsStack.navigationOptions = {
 SettingsStack.path = '';
 
 const tabNavigator = createBottomTabNavigator({
-  HomeStack,
   MapsStack,
+  MessageBoardStack,
   SettingsStack,
 });
 
