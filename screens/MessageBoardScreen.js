@@ -31,14 +31,12 @@ export default class MessageBoardScreen extends React.Component {
 
   sendMessage() {
     this.setState({...this.state, messages:[...this.state.messages, this.state.newmessage]},function(){
-      console.log(this.state.messages)
+      // console.log(this.state.messages)
     })
   }
   async getPosts() {
     try {
-      await FirebaseWrapper.GetInstance().SetupCollectionListener( 'Washington Market Park Board', (messages) => this.setState({ messages }, function(){
-        console.log(this.state.messages)
-      }))
+      await FirebaseWrapper.GetInstance().SetupCollectionListener( 'Washington Market Park Board', (messages) => this.setState({ messages }))
     } catch (error) {
       console.log(error)
     }

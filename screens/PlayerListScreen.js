@@ -22,8 +22,6 @@ export default class PlayerListScreen extends React.Component {
       if(marker.length > 0){
         this.setState({
           ...this.state, players: marker[0].players
-        }, function(){
-          console.log(this.state.players)
         })
       }
     } catch (error) {
